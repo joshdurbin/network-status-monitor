@@ -1,5 +1,5 @@
 @Grapes([
-  @Grab(group='org.jsoup', module='jsoup', version='1.8.1')
+  @Grab(group='org.jsoup', module='jsoup', version='1.9.2')
 ])
 
 import org.jsoup.Jsoup
