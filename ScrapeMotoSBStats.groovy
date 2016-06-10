@@ -89,7 +89,7 @@ def upstreamRangingStatusSuccessful = upstreamTableData.select('tr:has(td:contai
 
 def downstreamChannels = []
 
-8.times { counter ->
+downstreamChannelIds.size.times { counter ->
 
   downstreamChannels.add(new DownstreamChannel(
     channelId: downstreamChannelIds.get(counter) as Integer,
@@ -107,7 +107,7 @@ def downstreamChannels = []
 
 def upstreamChannels = []
 
-4.times { counter ->
+upstreamChannelIds.size.times { counter ->
 
   upstreamChannels.add(new UpstreamChannel(
     channelId: upstreamChannelIds.get(counter) as Integer,
