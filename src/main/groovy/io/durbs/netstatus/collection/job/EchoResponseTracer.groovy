@@ -39,7 +39,7 @@ class EchoResponseTracer implements Job {
             config.echoRequestsPerEndpoint().times {
 
                 final EchoResponse echoResponse = socketLayerFourTest(endpoint, DNS_PORT)
-                log.info("echo to ${echoResponse.endpoint} was ${echoResponse ? 'successful' : 'unsuccessful'} in ${echoResponse.time} ms")
+                log.debug("echo to ${echoResponse.endpoint} was ${echoResponse ? 'successful' : 'unsuccessful'} in ${echoResponse.time} ms")
 
                 echoResponseQueue.offer(echoResponse)
             }

@@ -8,6 +8,7 @@ import io.durbs.netstatus.collection.domain.EchoResponse
 import io.durbs.netstatus.collection.domain.ModemLogEntry
 import io.durbs.netstatus.collection.domain.modemstats.DownstreamChannel
 import io.durbs.netstatus.collection.domain.modemstats.UpstreamChannel
+import io.durbs.netstatus.service.FlushResult
 import io.durbs.netstatus.service.QueuingDynamoDBService
 import org.quartz.DisallowConcurrentExecution
 import org.quartz.Job
@@ -39,10 +40,26 @@ class DynamoDBQueueFlushJob implements Job {
         log.debug('running job...')
         final Stopwatch stopwatch = Stopwatch.createStarted()
 
-        log.info("flushed ${modemLogEntriesService.flush()} modem log entries")
-        log.info("flushed ${downstreamChannelService.flush()} downstream channel entries")
-        log.info("flushed ${upstreamChannelService.flush()} upstream channel entries")
-        log.info("flushed ${echoResponseService.flush()} echo response entries")
+        FlushResult<ModemLogEntry> modemLogEntryFlushResult = modemLogEntriesService.flush()
+        FlushResult<DownstreamChannel> downstreamChannelFlushResult = downstreamChannelService.flush()
+        FlushResult<UpstreamChannel> upstreamChannelFlushResult = upstreamChannelService.flush()
+        FlushResult<EchoResponse> echoResponseFlushResult = echoResponseService.flush()
+
+        if (modemLogEntryFlushResult.flushedResults && modemLogEntryFlushResult.success()) {
+            log.info("flushed ${modemLogEntryFlushResult.resultCount()} modem log entries")
+        }
+
+        if (downstreamChannelFlushResult.flushedResults && downstreamChannelFlushResult.success()) {
+            log.info("flushed ${downstreamChannelFlushResult.resultCount()} downstream channel entries")
+        }
+
+        if (upstreamChannelFlushResult.flushedResults && upstreamChannelFlushResult.success()) {
+            log.info("flushed ${upstreamChannelFlushResult.resultCount()} upstream channel entries")
+        }
+
+        if (echoResponseFlushResult.flushedResults && echoResponseFlushResult.success()) {
+            log.info("flushed ${echoResponseFlushResult.resultCount()} echo response entries")
+        }
 
         log.info("job finished in ${stopwatch.elapsed(TimeUnit.MILLISECONDS)}ms")
     }

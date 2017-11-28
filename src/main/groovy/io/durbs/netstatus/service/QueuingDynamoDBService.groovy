@@ -17,9 +17,9 @@ class QueuingDynamoDBService<T> {
         this.dynamoDBMapper = dynamoDBMapper
     }
 
-    Integer flush() {
+    FlushResult<T> flush() {
 
-        Integer flushCount = 0
+        ImmutableFlushResultBuilder<T> resultBuilder = new ImmutableFlushResultBuilder<>()
 
         T objectToSave
 
@@ -28,17 +28,18 @@ class QueuingDynamoDBService<T> {
             while (queue.peek()) {
 
                 objectToSave = queue.poll()
+
                 dynamoDBMapper.save(objectToSave)
-                ++flushCount
+                resultBuilder.addResult(objectToSave)
             }
 
         } catch (Exception exception) {
 
             log.error("An error occurred trying to save ${objectToSave}, offering object back to queue", exception)
             queue.offer(objectToSave)
-            flushCount = -1
+            resultBuilder.addFailedResult(objectToSave, exception)
         }
 
-        flushCount
+        resultBuilder.build()
     }
 }
