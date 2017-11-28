@@ -1,4 +1,4 @@
-package io.durbs.netstatus.domain
+package io.durbs.netstatus.collection.domain
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable

@@ -1,8 +1,11 @@
 modemLogsLocalEndpoint: http://192.168.100.1/cmLogsData.htm
 modemStatsLocalEndpoint: http://192.168.100.1/cmSignalData.htm
 
+echoResponseTracerJobCronExpression: 0 */15 * ? * *
+cableModemLogScraperJobCronExpression: 0 0 * ? * *
+cableModemStatisticsScraperJobCronExpression: 0 0 1 * * ?
+
 echoRequestsPerEndpoint: 5
-echoRequestTimeoutInMilliseconds: 5000
 echoResponseEndpoints:
 - 141.142.2.2
 - 8.8.8.8

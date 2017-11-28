@@ -6,10 +6,13 @@ interface Configuration {
     String awsSecretKey()
     String awsRegion()
 
+    String cableModemLogScraperJobCronExpression()
+    String cableModemStatisticsScraperJobCronExpression()
+    String echoResponseTracerJobCronExpression()
+
     String modemStatsLocalEndpoint()
     String modemLogsLocalEndpoint()
 
     Set<String> echoResponseEndpoints()
     Integer echoRequestsPerEndpoint()
-    Integer echoRequestTimeoutInMilliseconds()
 }

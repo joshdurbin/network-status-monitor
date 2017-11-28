@@ -11,6 +11,11 @@ import com.google.inject.Provides
 import com.google.inject.Singleton
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import io.durbs.netstatus.collection.domain.EchoResponse
+import io.durbs.netstatus.collection.domain.ModemLogEntry
+import io.durbs.netstatus.collection.domain.modemstats.DownstreamChannel
+import io.durbs.netstatus.collection.domain.modemstats.UpstreamChannel
+import io.durbs.netstatus.service.QueuingDynamoDBService
 import org.cfg4j.provider.ConfigurationProvider
 import org.cfg4j.provider.ConfigurationProviderBuilder
 import org.cfg4j.source.ConfigurationSource
@@ -35,6 +40,30 @@ class Module extends AbstractModule {
     Configuration config(ConfigurationProvider configurationProvider) {
 
         configurationProvider.bind('', Configuration)
+    }
+
+    @Provides
+    @Singleton
+    QueuingDynamoDBService<DownstreamChannel> downstreamChannelQueue(DynamoDBMapper dynamoDBMapper) {
+        new QueuingDynamoDBService<DownstreamChannel>(dynamoDBMapper)
+    }
+
+    @Provides
+    @Singleton
+    QueuingDynamoDBService<UpstreamChannel> upstreamChannelQueue(DynamoDBMapper dynamoDBMapper) {
+        new QueuingDynamoDBService<UpstreamChannel>(dynamoDBMapper)
+    }
+
+    @Provides
+    @Singleton
+    QueuingDynamoDBService<EchoResponse> echoResponseQueue(DynamoDBMapper dynamoDBMapper) {
+        new QueuingDynamoDBService<EchoResponse>(dynamoDBMapper)
+    }
+
+    @Provides
+    @Singleton
+    QueuingDynamoDBService<ModemLogEntry> modemLogEntriesQueue(DynamoDBMapper dynamoDBMapper) {
+        new QueuingDynamoDBService<ModemLogEntry>(dynamoDBMapper)
     }
 
     @Provides

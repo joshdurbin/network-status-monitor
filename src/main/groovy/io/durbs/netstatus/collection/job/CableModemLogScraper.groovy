@@ -1,13 +1,13 @@
-package io.durbs.netstatus.job
+package io.durbs.netstatus.collection.job
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper
 import com.google.common.base.Stopwatch
 import com.google.inject.Inject
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import io.durbs.netstatus.Configuration
 import io.durbs.netstatus.Constants
-import io.durbs.netstatus.domain.ModemLogEntry
+import io.durbs.netstatus.collection.domain.ModemLogEntry
+import io.durbs.netstatus.service.QueuingDynamoDBService
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -28,7 +28,7 @@ class CableModemLogScraper implements Job {
     Configuration config
 
     @Inject
-    DynamoDBMapper dynamoDBMapper
+    QueuingDynamoDBService<ModemLogEntry> modemLogEntriesQueue
 
     static final Integer EXPECTED_COLUMNS_IN_DATA_ROW = 4
 
@@ -46,7 +46,7 @@ class CableModemLogScraper implements Job {
 
             if (columnElements.size() == EXPECTED_COLUMNS_IN_DATA_ROW) {
 
-                dynamoDBMapper.save(new ModemLogEntry(
+                modemLogEntriesQueue.offer(new ModemLogEntry(
                         timestamp: Constants.MODEM_EVENT_LOG_DATE_FORMAT.parse(columnElements.get(0).text()),
                         priority: columnElements.get(1).text(),
                         code: columnElements.get(2).text(),

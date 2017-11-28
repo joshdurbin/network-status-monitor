@@ -1,14 +1,14 @@
-package io.durbs.netstatus.job
+package io.durbs.netstatus.collection.job
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper
 import com.google.common.base.Stopwatch
 import com.google.inject.Inject
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import io.durbs.netstatus.Configuration
-import io.durbs.netstatus.domain.modemstats.DownstreamChannel
+import io.durbs.netstatus.collection.domain.modemstats.DownstreamChannel
 
-import io.durbs.netstatus.domain.modemstats.UpstreamChannel
+import io.durbs.netstatus.collection.domain.modemstats.UpstreamChannel
+import io.durbs.netstatus.service.QueuingDynamoDBService
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -33,7 +33,10 @@ class CableModemStatisticsScraper implements Job {
     Configuration config
 
     @Inject
-    DynamoDBMapper dynamoDBMapper
+    QueuingDynamoDBService<DownstreamChannel> downstreamChannelQueue
+
+    @Inject
+    QueuingDynamoDBService<UpstreamChannel> upstreamChannelQueue
 
     @Override
     void execute(JobExecutionContext context) throws JobExecutionException {
@@ -45,11 +48,13 @@ class CableModemStatisticsScraper implements Job {
 
         final Date executionDate = Date.newInstance()
 
-        final List<DownstreamChannel> downstreamChannels = scrapeDownstreamChannels(surfboardCMSignalData, executionDate)
-        final List<UpstreamChannel> upstreamChannels = scrapeUpstreamChannels(surfboardCMSignalData, executionDate)
+        scrapeDownstreamChannels(surfboardCMSignalData, executionDate).each { DownstreamChannel downstreamChannel ->
+            downstreamChannelQueue.offer(downstreamChannel)
+        }
 
-        dynamoDBMapper.batchSave(downstreamChannels)
-        dynamoDBMapper.batchSave(upstreamChannels)
+        scrapeUpstreamChannels(surfboardCMSignalData, executionDate).each { UpstreamChannel upstreamChannel ->
+            upstreamChannelQueue.offer(upstreamChannel)
+        }
 
         log.info("job finished in ${stopwatch.elapsed(TimeUnit.MILLISECONDS)}ms")
     }
