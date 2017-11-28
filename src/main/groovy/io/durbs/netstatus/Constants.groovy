@@ -12,7 +12,4 @@ class Constants {
 
     static final String MODEM_EVENT_LOG_DATE_FORMAT_EXPRESSION = 'MMM dd yyyy HH:mm:ss'
     static final SimpleDateFormat MODEM_EVENT_LOG_DATE_FORMAT = new SimpleDateFormat(MODEM_EVENT_LOG_DATE_FORMAT_EXPRESSION)
-
-    static final Integer FLUSH_JOB_INTERVAL_IN_SECONDS = 30
-
 }

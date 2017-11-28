@@ -38,10 +38,10 @@ class Main {
 
         scheduler.start()
 
-        scheduler.scheduleJob(cableModemStatisticsScraperJob, newTrigger().startNow().withSchedule(cronSchedule(configuration.cableModemStatisticsScraperJobCronExpression())).build())
-        scheduler.scheduleJob(cableModemLogScraperJob, newTrigger().startNow().withSchedule(cronSchedule(configuration.cableModemLogScraperJobCronExpression())).build())
-        scheduler.scheduleJob(echoResponseTracer, newTrigger().startNow().withSchedule(cronSchedule(configuration.echoResponseTracerJobCronExpression())).build())
+        scheduler.scheduleJob(cableModemStatisticsScraperJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemStatisticsScraperJobExecutionIntervalInHours())).build())
+        scheduler.scheduleJob(cableModemLogScraperJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemLogScraperJobExecutionIntervalInHours())).build())
+        scheduler.scheduleJob(echoResponseTracer, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.echoResponseTracerJobExecutionIntervalInHours())).build())
 
-        scheduler.scheduleJob(persistenceJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(Constants.FLUSH_JOB_INTERVAL_IN_SECONDS)).build())
+        scheduler.scheduleJob(persistenceJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(configuration.dynamoDBQueueFlushJobExecutionIntervalInMinutes())).build())
     }
 }

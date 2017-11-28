@@ -6,9 +6,10 @@ interface Configuration {
     String awsSecretKey()
     String awsRegion()
 
-    String cableModemLogScraperJobCronExpression()
-    String cableModemStatisticsScraperJobCronExpression()
-    String echoResponseTracerJobCronExpression()
+    Integer cableModemLogScraperJobExecutionIntervalInHours()
+    Integer cableModemStatisticsScraperJobExecutionIntervalInHours()
+    Integer echoResponseTracerJobExecutionIntervalInHours()
+    Integer dynamoDBQueueFlushJobExecutionIntervalInMinutes()
 
     String modemStatsLocalEndpoint()
     String modemLogsLocalEndpoint()
