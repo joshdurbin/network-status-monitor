@@ -39,10 +39,10 @@ class DynamoDBQueueFlushJob implements Job {
         log.debug('running job...')
         final Stopwatch stopwatch = Stopwatch.createStarted()
 
-        log.error("flushed ${modemLogEntriesService.flush()} modem log entries")
-        log.error("flushed ${downstreamChannelService.flush()} downstream channel entries")
-        log.error("flushed ${upstreamChannelService.flush()} upstream channel entries")
-        log.error("flushed ${echoResponseService.flush()} echo response entries")
+        log.info("flushed ${modemLogEntriesService.flush()} modem log entries")
+        log.info("flushed ${downstreamChannelService.flush()} downstream channel entries")
+        log.info("flushed ${upstreamChannelService.flush()} upstream channel entries")
+        log.info("flushed ${echoResponseService.flush()} echo response entries")
 
         log.info("job finished in ${stopwatch.elapsed(TimeUnit.MILLISECONDS)}ms")
     }

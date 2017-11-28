@@ -35,6 +35,7 @@ class QueuingDynamoDBService<T> {
         } catch (Exception exception) {
 
             log.error("An error occurred trying to save ${objectToSave}, offering object back to queue", exception)
+            queue.offer(objectToSave)
             flushCount = -1
         }
 
