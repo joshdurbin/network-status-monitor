@@ -2,7 +2,7 @@ modemLogsLocalEndpoint: http://192.168.100.1/cmLogsData.htm
 modemStatsLocalEndpoint: http://192.168.100.1/cmSignalData.htm
 
 cableModemLogScraperJobExecutionIntervalInHours: 24
-cableModemStatisticsScraperJobExecutionIntervalInHours: 6
+cableModemStatisticsScraperJobExecutionIntervalInHours: 24
 echoResponseTracerJobExecutionIntervalInHours: 1
 dynamoDBQueueFlushJobExecutionIntervalInMinutes: 30
 

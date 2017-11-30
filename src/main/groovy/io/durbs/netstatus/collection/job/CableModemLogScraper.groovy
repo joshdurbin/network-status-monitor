@@ -17,6 +17,7 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
 
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 @DisallowConcurrentExecution
@@ -40,6 +41,8 @@ class CableModemLogScraper implements Job {
 
         final Document logsData = Jsoup.connect(config.modemLogsLocalEndpoint()).get()
 
+        final LocalDateTime executionTime = LocalDateTime.now()
+
         logsData.select('tr').each { final Element rowElement ->
 
             Elements columnElements = rowElement.select('td')
@@ -47,7 +50,9 @@ class CableModemLogScraper implements Job {
             if (columnElements.size() == EXPECTED_COLUMNS_IN_DATA_ROW) {
 
                 modemLogEntriesQueue.offer(new ModemLogEntry(
-                        timestamp: Constants.MODEM_EVENT_LOG_DATE_FORMAT.parse(columnElements.get(0).text()),
+
+                        timestamp: executionTime,
+                        logTimestamp: Constants.MODEM_EVENT_LOG_DATE_FORMAT.parse(columnElements.get(0).text()),
                         priority: columnElements.get(1).text(),
                         code: columnElements.get(2).text(),
                         message: columnElements.get(3).text()))

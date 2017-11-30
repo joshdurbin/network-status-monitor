@@ -1,16 +1,13 @@
 package io.durbs.netstatus.collection.domain
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable
 import groovy.transform.Canonical
 
 @Canonical
-@DynamoDBTable(tableName='modem_log_entries')
-class ModemLogEntry {
+@DynamoDBTable(tableName='net_stat_tracker_modem_logs')
+class ModemLogEntry extends BaseRecord {
 
-    @DynamoDBHashKey
-    Date timestamp
-
+    Date logTimestamp
     String priority
     String code
     String message

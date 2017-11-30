@@ -18,6 +18,7 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
 
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 @Slf4j
@@ -46,20 +47,20 @@ class CableModemStatisticsScraper implements Job {
 
         final Document surfboardCMSignalData = Jsoup.connect(config.modemStatsLocalEndpoint()).get()
 
-        final Date executionDate = Date.newInstance()
+        final LocalDateTime executionTime = LocalDateTime.now()
 
-        scrapeDownstreamChannels(surfboardCMSignalData, executionDate).each { DownstreamChannel downstreamChannel ->
+        scrapeDownstreamChannels(surfboardCMSignalData, executionTime).each { DownstreamChannel downstreamChannel ->
             downstreamChannelQueue.offer(downstreamChannel)
         }
 
-        scrapeUpstreamChannels(surfboardCMSignalData, executionDate).each { UpstreamChannel upstreamChannel ->
+        scrapeUpstreamChannels(surfboardCMSignalData, executionTime).each { UpstreamChannel upstreamChannel ->
             upstreamChannelQueue.offer(upstreamChannel)
         }
 
         log.info("job finished in ${stopwatch.elapsed(TimeUnit.MILLISECONDS)}ms")
     }
 
-    static List<DownstreamChannel> scrapeDownstreamChannels(final Document document, final Date executionDate) {
+    static List<DownstreamChannel> scrapeDownstreamChannels(final Document document, final LocalDateTime executionTime) {
 
         final Elements downstreamTableData = document.select('table:has(th:contains(Downstream))')
         final Elements downstreamStats = document.select('table:has(th:contains(Signal Stats))')
@@ -80,7 +81,7 @@ class CableModemStatisticsScraper implements Job {
 
             channels.add(new DownstreamChannel(
 
-                    timestamp: executionDate,
+                    timestamp: executionTime,
                     channel: downstreamChannelIds.get(counter),
                     frequency: downstreamFrequencies.get(counter),
                     powerLevel: downstreamPowerLevels.get(counter),
@@ -95,7 +96,7 @@ class CableModemStatisticsScraper implements Job {
         channels
     }
 
-    static List<UpstreamChannel> scrapeUpstreamChannels(final Document document, final Date executionDate) {
+    static List<UpstreamChannel> scrapeUpstreamChannels(final Document document, final LocalDateTime executionTime) {
 
         final Elements upstreamTableData = document.select('table:has(th:contains(Upstream))')
 
@@ -113,7 +114,7 @@ class CableModemStatisticsScraper implements Job {
 
             channels.add(new UpstreamChannel(
 
-                    timestamp: executionDate,
+                    timestamp: executionTime,
                     channel: upstreamChannelIds.get(counter),
                     frequency: upstreamFrequencies.get(counter),
                     powerLevel: upstreamPowerLevels.get(counter),

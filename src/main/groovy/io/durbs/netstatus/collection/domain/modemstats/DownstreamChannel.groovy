@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable
 import groovy.transform.Canonical
 
 @Canonical
-@DynamoDBTable(tableName='downstream_cable_modem_statistics')
+@DynamoDBTable(tableName='net_stat_tracker_downstream_modem_stats')
 class DownstreamChannel extends BaseChannel {
 
     String signalToNoiseRatio
