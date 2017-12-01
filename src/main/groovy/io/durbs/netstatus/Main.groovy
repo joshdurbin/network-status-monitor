@@ -9,12 +9,10 @@ import io.durbs.netstatus.collection.job.CableModemStatisticsScraper
 import io.durbs.netstatus.service.job.DynamoDBQueueFlushJob
 import io.durbs.netstatus.collection.job.EchoResponseTracer
 import io.durbs.netstatus.factory.GuiceJobFactory
-import org.quartz.JobDetail
 import org.quartz.Scheduler
 import org.quartz.SimpleScheduleBuilder
 import org.quartz.impl.StdSchedulerFactory
 
-import static org.quartz.CronScheduleBuilder.cronSchedule
 import static org.quartz.JobBuilder.newJob
 import static org.quartz.TriggerBuilder.newTrigger
 
@@ -31,17 +29,24 @@ class Main {
 
         scheduler.setJobFactory(injector.getInstance(GuiceJobFactory))
 
-        final JobDetail cableModemStatisticsScraperJob = newJob (CableModemStatisticsScraper).build()
-        final JobDetail cableModemLogScraperJob = newJob (CableModemLogScraper).build()
-        final JobDetail echoResponseTracer = newJob (EchoResponseTracer).build()
-        final JobDetail persistenceJob = newJob(DynamoDBQueueFlushJob).build()
-
         scheduler.start()
 
-        scheduler.scheduleJob(cableModemStatisticsScraperJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemStatisticsScraperJobExecutionIntervalInHours())).build())
-        scheduler.scheduleJob(cableModemLogScraperJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemLogScraperJobExecutionIntervalInHours())).build())
-        scheduler.scheduleJob(echoResponseTracer, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatHourlyForever(configuration.echoResponseTracerJobExecutionIntervalInHours())).build())
+        scheduler.scheduleJob(
+                newJob(CableModemStatisticsScraper).build(),
+                newTrigger().startNow().withSchedule(
+                        SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemStatisticsScraperJobExecutionIntervalInHours())).build())
+        scheduler.scheduleJob(
+                newJob(CableModemLogScraper).build(),
+                newTrigger().startNow().withSchedule(
+                        SimpleScheduleBuilder.repeatHourlyForever(configuration.cableModemLogScraperJobExecutionIntervalInHours())).build())
+        scheduler.scheduleJob(
+                newJob(EchoResponseTracer).build(),
+                newTrigger().startNow().withSchedule(
+                        SimpleScheduleBuilder.repeatHourlyForever(configuration.echoResponseTracerJobExecutionIntervalInHours())).build())
 
-        scheduler.scheduleJob(persistenceJob, newTrigger().startNow().withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(configuration.dynamoDBQueueFlushJobExecutionIntervalInMinutes())).build())
+        scheduler.scheduleJob(
+                newJob(DynamoDBQueueFlushJob).build(),
+                newTrigger().startNow().withSchedule(
+                        SimpleScheduleBuilder.repeatMinutelyForever(configuration.dynamoDBQueueFlushJobExecutionIntervalInMinutes())).build())
     }
 }
