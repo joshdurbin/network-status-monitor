@@ -3,35 +3,54 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.3.2'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.bmuschko.docker-java-application'
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    compile group: "org.cfg4j", name:"cfg4j-core", version: "4.4.1"
-    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
-    compile group: 'com.google.guava', name: 'guava', version: '23.3-jre'
-    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
-    compile group: 'org.jsoup', name: 'jsoup', version: '1.11.2'
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.232'
-    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.2.1'
-    compile group: 'org.quartz-scheduler', name: 'quartz-jobs', version: '2.2.1'
-    compile group: 'com.zaxxer', name: 'nuprocess', version: '1.1.2'
+    compile group: 'org.cfg4j', name:'cfg4j-core', version: '4.4.1'
+    compile group: 'com.google.inject', name: 'guice', version: '4.2.0'
+    compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.0'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.342'
+    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
+    compile group: 'org.quartz-scheduler', name: 'quartz-jobs', version: '2.3.0'
 
-    runtime 'org.apache.logging.log4j:log4j-slf4j-impl:2.9.1'
-    runtime 'org.apache.logging.log4j:log4j-api:2.9.1'
-    runtime 'org.apache.logging.log4j:log4j-core:2.9.1'
+    runtime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.10.0'
+    runtime group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    runtime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
 
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
 }
 
 mainClassName = 'io.durbs.netstatus.Main'
 
+docker {
+
+    if (System.getenv('CI')) {
+        url = System.getenv('DOCKER_HOST')
+        certPath = new File(System.getenv('DOCKER_CERT_PATH'))
+
+        registryCredentials {
+            username = System.getenv('DOCKER_USERNAME')
+            password = System.getenv('DOCKER_PASSWORD')
+            email = System.getenv('DOCKER_EMAIL')
+        }
+    }
+
+    javaApplication {
+        maintainer = 'Josh Durbin "durbinjo593@gmail.com"'
+        port = 5050
+        baseImage = 'anapsix/alpine-java:8_server-jre'
+        tag = "joshdurbin/network-status-monitor:latest"
+    }
+}
