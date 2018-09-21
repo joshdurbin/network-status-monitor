@@ -2,14 +2,14 @@ buildscript {
     repositories {
         jcenter()
     }
-    dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.3.2'
-    }
+}
+
+plugins {
+  id 'com.google.cloud.tools.jib' version '0.9.10'
 }
 
 apply plugin: 'groovy'
 apply plugin: 'application'
-apply plugin: 'com.bmuschko.docker-java-application'
 
 repositories {
     jcenter()
@@ -34,23 +34,15 @@ dependencies {
 
 mainClassName = 'io.durbs.netstatus.Main'
 
-docker {
+jib {
+  to {
+    image = 'joshdurbin/network-status-monitor'
 
     if (System.getenv('CI')) {
-        url = System.getenv('DOCKER_HOST')
-        certPath = new File(System.getenv('DOCKER_CERT_PATH'))
-
-        registryCredentials {
-            username = System.getenv('DOCKER_USERNAME')
-            password = System.getenv('DOCKER_PASSWORD')
-            email = System.getenv('DOCKER_EMAIL')
-        }
+      auth {
+        username = System.getenv('DOCKER_USERNAME')
+        password = System.getenv('DOCKER_PASSWORD')
+      }
     }
-
-    javaApplication {
-        maintainer = 'Josh Durbin "durbinjo593@gmail.com"'
-        port = 5050
-        baseImage = 'anapsix/alpine-java:8_server-jre'
-        tag = "joshdurbin/network-status-monitor:latest"
-    }
+  }
 }
